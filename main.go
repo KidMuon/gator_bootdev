@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kidmuon/gator_bootdev/internal/config"
 	"log"
+	"os"
 )
 
 func main() {
@@ -12,17 +13,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(programConfig)
+	programState := &State{&programConfig}
 
-	err = programConfig.SetUser("KidMuon")
-	if err != nil {
-		log.Fatal(err)
+	programCommands := Commands{validCommands: make(map[string]func(*State, Command) error)}
+	programCommands.register("login", handlerLogin)
+
+	if len(os.Args) < 2 {
+		fmt.Println("error: no command passed")
+		os.Exit(1)
 	}
 
-	programConfig, err = config.Read()
-	if err != nil {
-		log.Fatal(err)
+	var programArgs []string
+	if len(os.Args) == 2 {
+		programArgs = []string{}
+	} else {
+		programArgs = os.Args[2:]
 	}
 
-	return
+	err = programCommands.run(programState, Command{name: os.Args[1], args: programArgs})
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(1)
+	}
+
+	os.Exit(0)
 }
