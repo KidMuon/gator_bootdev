@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -10,7 +11,12 @@ func handlerLogin(state *State, command Command) error {
 	}
 	username := command.args[0]
 
-	err := state.SetUser(username)
+	_, err := state.db.GetUser(context.Background(), username)
+	if err != nil {
+		return fmt.Errorf("username %s not registered with database", username)
+	}
+
+	err = state.cfg.SetUser(username)
 	if err != nil {
 		return fmt.Errorf("error logging in user %s: %v", username, err)
 	}
