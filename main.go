@@ -35,6 +35,8 @@ func main() {
 	programCommands.register("register", handlerRegister)
 	programCommands.register("reset", handlerReset)
 	programCommands.register("users", handlerUsers)
+	programCommands.register("agg", handlerAgg)
+	programCommands.register("addfeed", handlerAddFeed)
 
 	if len(os.Args) < 2 {
 		fmt.Println("error: no command passed")
