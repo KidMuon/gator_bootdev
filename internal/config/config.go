@@ -44,25 +44,21 @@ func Read() (Config, error) {
 func (c *Config) SetUser(username string) error {
 	c.Username = username
 
-	data, err := json.Marshal(c)
-	if err != nil {
-		return fmt.Errorf("error marshalling to json: %v", err)
-	}
-
 	userHome, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("error getting home directory: %v", err)
 	}
 
-	file, err := os.OpenFile(filepath.Join(userHome, configFileName), os.O_WRONLY, 0644)
+	file, err := os.Create(filepath.Join(userHome, configFileName))
 	if err != nil {
-		return fmt.Errorf("error opening config file for writing: %v", err)
+		return fmt.Errorf("error opening config file: %v", err)
 	}
 	defer file.Close()
 
-	_, err = file.Write(data)
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(c)
 	if err != nil {
-		return fmt.Errorf("error writing config file: %v", err)
+		return fmt.Errorf("error encoding json to file: %v", err)
 	}
 
 	return nil
