@@ -14,21 +14,21 @@ import (
 
 const createFeedFollow = `-- name: CreateFeedFollow :one
 WITH insertedfeedfollow AS (
-	INSERT INTO feedfollows (ID, created_at, updated_at, user_id, feed_url)
+	INSERT INTO feedfollows (ID, created_at, updated_at, user_id, feed_id)
 	VALUES (
 		$1, 
 		$2, 
 		$3, 
 		$4, 
 		$5
-	) RETURNING id, created_at, updated_at, user_id, feed_url
+	) RETURNING id, created_at, updated_at, user_id, feed_id
 )
-SELECT a.id, a.created_at, a.updated_at, a.user_id, a.feed_url, B.Name as UserName, C.Name as FeedName
+SELECT a.id, a.created_at, a.updated_at, a.user_id, a.feed_id, B.Name as UserName, C.Name as FeedName
 FROM insertedfeedfollow A
 INNER JOIN users B
 	ON A.user_id = B.ID
 INNER JOIN feeds C
-	ON A.feed_url = C.url
+	ON A.feed_id = C.ID
 `
 
 type CreateFeedFollowParams struct {
@@ -36,7 +36,7 @@ type CreateFeedFollowParams struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	UserID    uuid.UUID
-	FeedUrl   string
+	FeedID    uuid.UUID
 }
 
 type CreateFeedFollowRow struct {
@@ -44,7 +44,7 @@ type CreateFeedFollowRow struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	UserID    uuid.UUID
-	FeedUrl   string
+	FeedID    uuid.UUID
 	Username  string
 	Feedname  string
 }
@@ -55,7 +55,7 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.UserID,
-		arg.FeedUrl,
+		arg.FeedID,
 	)
 	var i CreateFeedFollowRow
 	err := row.Scan(
@@ -63,7 +63,7 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.UserID,
-		&i.FeedUrl,
+		&i.FeedID,
 		&i.Username,
 		&i.Feedname,
 	)

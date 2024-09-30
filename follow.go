@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/kidmuon/gator_bootdev/internal/database"
-	"time"
 )
 
 func handlerFollow(state *State, command Command, user database.User) error {
@@ -14,13 +15,17 @@ func handlerFollow(state *State, command Command, user database.User) error {
 	}
 
 	feedurl := command.args[0]
+	feed, err := state.db.GetFeedByURL(context.Background(), feedurl)
+	if err != nil {
+		return fmt.Errorf("Unable to find feed with url: \"%s\", error: %v", feedurl, err)
+	}
 
 	feedFollowToCreate := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		UserID:    user.ID,
-		FeedUrl:   feedurl,
+		FeedID:    feed.ID,
 	}
 
 	feedFollowRow, err := state.db.CreateFeedFollow(context.Background(), feedFollowToCreate)

@@ -13,24 +13,24 @@ import (
 
 const deleteFeedFollow = `-- name: DeleteFeedFollow :one
 DELETE FROM feedfollows
-WHERE User_ID = $1 AND Feed_Url = $2
-RETURNING id, created_at, updated_at, user_id, feed_url
+WHERE user_id = $1 AND feed_id = $2
+RETURNING id, created_at, updated_at, user_id, feed_id
 `
 
 type DeleteFeedFollowParams struct {
-	UserID  uuid.UUID
-	FeedUrl string
+	UserID uuid.UUID
+	FeedID uuid.UUID
 }
 
 func (q *Queries) DeleteFeedFollow(ctx context.Context, arg DeleteFeedFollowParams) (Feedfollow, error) {
-	row := q.db.QueryRowContext(ctx, deleteFeedFollow, arg.UserID, arg.FeedUrl)
+	row := q.db.QueryRowContext(ctx, deleteFeedFollow, arg.UserID, arg.FeedID)
 	var i Feedfollow
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.UserID,
-		&i.FeedUrl,
+		&i.FeedID,
 	)
 	return i, err
 }

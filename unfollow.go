@@ -12,19 +12,23 @@ func handlerUnfollow(state *State, command Command, user database.User) error {
 		return fmt.Errorf("unfollow expects a url to unfollow")
 	}
 
-	feedUrl := command.args[0]
+	feedurl := command.args[0]
+	feed, err := state.db.GetFeedByURL(context.Background(), feedurl)
+	if err != nil {
+		return fmt.Errorf("Unable to find feed with url: \"%s\", error: %v", feedurl, err)
+	}
 
 	feedfollowToDelete := database.DeleteFeedFollowParams{
-		UserID:  user.ID,
-		FeedUrl: feedUrl,
+		UserID: user.ID,
+		FeedID: feed.ID,
 	}
 
-	ff, err := state.db.DeleteFeedFollow(context.Background(), feedfollowToDelete)
+	_, err = state.db.DeleteFeedFollow(context.Background(), feedfollowToDelete)
 	if err != nil {
-		return fmt.Errorf("problem unfollowing %s: %v", feedUrl, err)
+		return fmt.Errorf("problem unfollowing %s: %v", feedurl, err)
 	}
 
-	fmt.Printf("User %s no longer follows %s", user.Name, ff.FeedUrl)
+	fmt.Printf("User %s no longer follows %s", user.Name, feedurl)
 
 	return nil
 }

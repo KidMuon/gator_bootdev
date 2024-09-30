@@ -1,6 +1,6 @@
 -- name: CreateFeedFollow :one
 WITH insertedfeedfollow AS (
-	INSERT INTO feedfollows (ID, created_at, updated_at, user_id, feed_url)
+	INSERT INTO feedfollows (ID, created_at, updated_at, user_id, feed_id)
 	VALUES (
 		$1, 
 		$2, 
@@ -14,4 +14,4 @@ FROM insertedfeedfollow A
 INNER JOIN users B
 	ON A.user_id = B.ID
 INNER JOIN feeds C
-	ON A.feed_url = C.url;
+	ON A.feed_id = C.ID;

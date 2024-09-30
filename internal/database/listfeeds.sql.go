@@ -7,20 +7,19 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const listFeeds = `-- name: ListFeeds :many
 SELECT A.Name as Feed_Name, A.Url, B.Name as User_Name
 FROM feeds A
-LEFT JOIN users B
+INNER JOIN users B
 	ON A.user_id = B.ID
 `
 
 type ListFeedsRow struct {
 	FeedName string
 	Url      string
-	UserName sql.NullString
+	UserName string
 }
 
 func (q *Queries) ListFeeds(ctx context.Context) ([]ListFeedsRow, error) {

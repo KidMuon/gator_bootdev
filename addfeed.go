@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"github.com/google/uuid"
 	"github.com/kidmuon/gator_bootdev/internal/database"
 )
 
@@ -15,9 +18,12 @@ func handlerAddFeed(state *State, command Command, user database.User) error {
 	feedUrl := command.args[1]
 
 	feedToCreate := database.CreateFeedParams{
-		Name:   feedName,
-		Url:    feedUrl,
-		UserID: user.ID,
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      feedName,
+		Url:       feedUrl,
+		UserID:    user.ID,
 	}
 
 	feed, err := state.db.CreateFeed(context.Background(), feedToCreate)

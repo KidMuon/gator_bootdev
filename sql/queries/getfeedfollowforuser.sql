@@ -4,5 +4,5 @@ FROM feedfollows A
 INNER JOIN users B
 	ON A.user_id = B.ID
 INNER JOIN feeds C
-	ON A.feed_url = C.url
+	ON A.feed_id = C.ID
 WHERE B.name = $1;
