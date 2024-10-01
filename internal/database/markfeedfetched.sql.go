@@ -9,22 +9,26 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const markFeedFetched = `-- name: MarkFeedFetched :one
 UPDATE feeds
 SET updated_at = $1,
  last_fetched_at = $2
+WHERE ID = $3
 RETURNING id, created_at, updated_at, name, url, user_id, last_fetched_at
 `
 
 type MarkFeedFetchedParams struct {
 	UpdatedAt     time.Time
 	LastFetchedAt sql.NullTime
+	ID            uuid.UUID
 }
 
 func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) (Feed, error) {
-	row := q.db.QueryRowContext(ctx, markFeedFetched, arg.UpdatedAt, arg.LastFetchedAt)
+	row := q.db.QueryRowContext(ctx, markFeedFetched, arg.UpdatedAt, arg.LastFetchedAt, arg.ID)
 	var i Feed
 	err := row.Scan(
 		&i.ID,

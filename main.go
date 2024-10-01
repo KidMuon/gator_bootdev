@@ -41,6 +41,7 @@ func main() {
 	programCommands.register("follow", middlewareLoggedIn(handlerFollow))
 	programCommands.register("following", handlerFollowing)
 	programCommands.register("unfollow", middlewareLoggedIn(handlerUnfollow))
+	programCommands.register("browse", middlewareLoggedIn(handlerBrowse))
 
 	if len(os.Args) < 2 {
 		fmt.Println("error: no command passed")
